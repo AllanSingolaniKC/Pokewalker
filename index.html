@@ -745,8 +745,68 @@ function PkmnSprite({name, size=80, shiny=false, style={}}){
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CORES
+// SISTEMA DE SPRITES DE ITENS
 // ═══════════════════════════════════════════════════════════════
+
+// Mapeamento nome do item → slug da URL do PokeAPI
+// Alguns itens têm nomes inconsistentes no jogo vs PokeAPI — corrigidos manualmente
+const ITEM_SLUG = {
+  "Antidote":"antidote","Aspear Berry":"aspear-berry","Awakening":"awakening",
+  "Big Mushroom":"big-mushroom","Big Pearl":"big-pearl","Blue Shard":"blue-shard",
+  "Burn Heal":"burn-heal","Charcoal":"charcoal","Cheri Berry":"cheri-berry",
+  "Chesto Berry":"chesto-berry","Chople Berry":"chople-berry",
+  "Dawn Stone":"dawn-stone","Deep Sea Scale":"deep-sea-scale",
+  "DeepSeaTooth":"deep-sea-tooth","Dive Ball":"dive-ball",
+  "Dragon Scale":"dragon-scale","Dusk Ball":"dusk-ball","Dusk Stone":"dusk-stone",
+  "Energy Root":"energy-root","EnergyPowder":"energy-powder",
+  "Escape Rope":"escape-rope","Ether":"ether","Fire Stone":"fire-stone",
+  "Fresh Water":"fresh-water","Full Heal":"full-heal","Full Restore":"full-restore",
+  "Green Shard":"green-shard","Hard Stone":"hard-stone","Heart Scale":"heart-scale",
+  "Hyper Potion":"hyper-potion","Ice Heal":"ice-heal","Icy Rock":"icy-rock",
+  "King's Rock":"kings-rock","Leaf Stone":"leaf-stone","Lemonade":"lemonade",
+  "Leppa Berry":"leppa-berry","Lum Berry":"lum-berry",
+  "Miracle Seed":"miracle-seed","MiracleSeed":"miracle-seed",
+  "Moon Stone":"moon-stone","Mystic Water":"mystic-water",
+  "Net Ball":"net-ball","NeverMeltIce":"never-melt-ice",
+  "Oran Berry":"oran-berry","Oval Stone":"oval-stone",
+  "PP Max":"pp-max","PP Up":"pp-up",
+  "Paralyze Heal":"paralyze-heal","Parlyz Heal":"paralyze-heal",
+  "Pecha Berry":"pecha-berry","Persim Berry":"persim-berry","Potion":"potion",
+  "Rawst Berry":"rawst-berry","Red Shard":"red-shard","Repel":"repel",
+  "Revive":"revive","Rindo Berry":"rindo-berry",
+  "Scope Lens":"scope-lens","Sharp Beak":"sharp-beak","Shiny Stone":"shiny-stone",
+  "Silk Scarf":"silk-scarf","Silverpowder":"silver-powder",
+  "Sitrus Berry":"sitrus-berry","Soda Pop":"soda-pop","Soothe Bell":"soothe-bell",
+  "Spell Tag":"spell-tag","Star Piece":"star-piece","Stardust":"stardust",
+  "Sun Stone":"sun-stone","Super Potion":"super-potion","Super Repel":"super-repel",
+  "Thunder Stone":"thunder-stone","TinyMushroom":"tiny-mushroom",
+  "Twisted Spoon":"twisted-spoon","Wacan Berry":"wacan-berry",
+  "Water Stone":"water-stone","Yellow Shard":"yellow-shard",
+};
+
+const ITEM_SPRITE_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/";
+
+// Componente de sprite de item (24×24px, inline)
+function ItemSprite({name, size=24, style={}}){
+  const slug = ITEM_SLUG[name];
+  const [failed, setFailed] = React.useState(false);
+
+  // Se não tiver slug no mapa, não renderiza imagem
+  if(!slug || failed){
+    return <span style={{fontSize: Math.round(size*0.9)+"px", lineHeight:"1", ...style}}>🎒</span>;
+  }
+
+  return (
+    <img
+      src={ITEM_SPRITE_BASE + slug + ".png"}
+      alt={name}
+      width={size} height={size}
+      style={{imageRendering:"pixelated", objectFit:"contain",
+              verticalAlign:"middle", ...style}}
+      onError={()=>setFailed(true)}
+    />
+  );
+}
 const C={
   bg:"#e8e8e8",sur:"#d0d0d0",bor:"#888888",
   pixel:"#1a1a1a",dim:"#555555",
@@ -1489,8 +1549,8 @@ function MenuScreen({stroll,onRadar,onDowsing,onStats,onBack,onEnd,onAddSteps,on
             </div>
           ))}
           {stroll.foundItems.map((it,i)=>(
-            <div key={i} style={{padding:"8px 0",borderBottom:"1px solid #374151",fontSize:"14px",color:"#34d399"}}>
-              🎒 {it.name||it}
+            <div key={i} style={{padding:"8px 0",borderBottom:"1px solid #374151",fontSize:"14px",color:"#34d399",display:"flex",alignItems:"center",gap:6}}>
+              <ItemSprite name={it.name||it} size={20}/> {it.name||it}
             </div>
           ))}
         </div>
@@ -1514,7 +1574,7 @@ function WandererScreen({wanderer,stroll,onClose,onBattle,onTrade,onBattleAction
         </div>
         <div style={{background:"#1f2937",border:"1px solid #374151",borderRadius:"12px",padding:"14px",marginBottom:"16px"}}>
           <div style={{fontSize:"12px",color:"#6b7280",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"8px"}}>Oferta de Item</div>
-          <div style={{fontSize:"16px",fontWeight:"700",color:"#f9fafb",marginBottom:"6px"}}>{wanderer.giftItem?.name||"Potion"}</div>
+          <div style={{fontSize:"16px",fontWeight:"700",color:"#f9fafb",marginBottom:"6px",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}><ItemSprite name={wanderer.giftItem?.name||"Potion"} size={28}/>{wanderer.giftItem?.name||"Potion"}</div>
           <div style={{fontSize:"13px",fontWeight:"600",color:qColor}}>{qLabel} · {stroll.steps>=3000?"Passeio longo! 🔥":stroll.steps>=1500?"Bom ritmo! 💪":"Início de passeio"}</div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"8px"}}>
@@ -1547,7 +1607,7 @@ function WandererScreen({wanderer,stroll,onClose,onBattle,onTrade,onBattleAction
           <div style={{fontSize:"20px",fontWeight:"700",color:"#f9fafb",marginBottom:"8px"}}>
             {wanderer.phase==="battleWon"?"Vitória!"
             :wanderer.phase==="battleLost"?"Derrota..."
-            :wanderer.phase==="tradeAccepted"?`Recebeu: ${wanderer.giftItem?.name}`
+            :wanderer.phase==="tradeAccepted"?<span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:8}}><ItemSprite name={wanderer.giftItem?.name} size={28}/>{wanderer.giftItem?.name}</span>
             :`${wanderer.name} foi embora.`}
           </div>
           {wanderer.phase==="battleWon"&&<div style={{fontSize:"14px",color:"#10b981",marginBottom:"20px"}}>⭐ Rare Boost ativado pelo resto do passeio!</div>}
@@ -1564,14 +1624,14 @@ function ItemSwapScreen({newItem,bag,onSwap,onDiscard}){
       <TBar title="BOLSA CHEIA!"/>
       <div style={{background:"rgba(245,158,11,.1)",border:"2px solid #f59e0b",borderRadius:"12px",padding:"16px",marginBottom:"20px",textAlign:"center"}}>
         <div style={{fontSize:"13px",color:"#f59e0b",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"6px"}}>Novo Item Encontrado</div>
-        <div style={{fontSize:"20px",fontWeight:"700",color:"#f9fafb"}}>{newItem?.name||newItem}</div>
+        <div style={{fontSize:"16px",fontWeight:"700",color:"#f9fafb",display:"flex",alignItems:"center",justifyContent:"center",gap:10}}><ItemSprite name={newItem?.name||newItem} size={32}/>{newItem?.name||newItem}</div>
       </div>
       <div style={{fontSize:"14px",color:"#9ca3af",marginBottom:"14px",lineHeight:"1.5"}}>Sua bolsa está cheia. Escolha qual item descartar para guardar o novo:</div>
       <div style={{display:"flex",flexDirection:"column",gap:"8px",marginBottom:"16px"}}>
         {bag.map((it,i)=>(
           <button key={i} className="btn" onClick={()=>onSwap(i)}
             style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px",background:"#1f2937",border:"1px solid #374151",borderRadius:"12px",cursor:"pointer"}}>
-            <span style={{fontSize:"16px",fontWeight:"600",color:"#f9fafb"}}>{it?.name||it}</span>
+            <span style={{fontSize:"15px",fontWeight:"600",color:"#f9fafb",display:"flex",alignItems:"center",gap:8}}><ItemSprite name={it?.name||it} size={24}/>{it?.name||it}</span>
             <span style={{fontSize:"13px",color:"#ef4444",fontWeight:"600"}}>Descartar ✕</span>
           </button>
         ))}
@@ -1627,7 +1687,7 @@ function DowsingScreen({dowsing,onChoose,onBack}){
       <div style={{textAlign:"center",minHeight:"50px",marginBottom:"16px"}}>
         {!dowsing.over&&!dowsing.hint&&<div style={{fontSize:"14px",color:"#9ca3af"}}>Escolha um arbusto para investigar</div>}
         {dowsing.hint&&!dowsing.over&&<div style={{fontSize:"16px",fontWeight:"700",color:"#f59e0b"}}>{dowsing.hint}</div>}
-        {dowsing.over&&<div style={{fontSize:"18px",fontWeight:"700",color:dowsing.result==="found"?"#10b981":"#ef4444"}}>{dowsing.result==="found"?`✓ ${dowsing.item.name} encontrado!`:"Nada encontrado..."}</div>}
+        {dowsing.over&&<div style={{fontSize:"18px",fontWeight:"700",color:dowsing.result==="found"?"#10b981":"#ef4444"}}>{dowsing.result==="found"?<span style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6}}><ItemSprite name={dowsing.item.name} size={24}/>✓ {dowsing.item.name} encontrado!</span>:"Nada encontrado..."}</div>}
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"16px"}}>
         {[0,1,2,3,4,5].map(i=>{
@@ -1770,7 +1830,7 @@ function ResultScreen({result,onNew}){
           ))}
           {s.foundItems.map((it,i)=>(
             <div key={i} style={{padding:"8px 0",borderBottom:"1px solid #374151",fontSize:"14px",color:"#34d399"}}>
-              🎒 {it.name||it}
+              <ItemSprite name={it.name||it} size={20} style={{marginRight:4}}/> {it.name||it}
             </div>
           ))}
         </div>
