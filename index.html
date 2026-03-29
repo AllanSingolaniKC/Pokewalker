@@ -807,6 +807,96 @@ function ItemSprite({name, size=24, style={}}){
     />
   );
 }
+// ═══════════════════════════════════════════════════════════════
+// NATURES, ABILITIES, MOVES E IVs — para detalhes de captura
+// ═══════════════════════════════════════════════════════════════
+const NATURES=["Hardy","Lonely","Brave","Adamant","Naughty","Bold","Docile","Relaxed",
+  "Impish","Lax","Timid","Hasty","Serious","Jolly","Naive","Modest",
+  "Mild","Quiet","Bashful","Rash","Calm","Gentle","Sassy","Careful","Quirky"];
+
+// Habilidades por espécie [slot0, slot1]
+const ABILITIES={
+  "Pikachu":["Static","Lightning Rod"],"Pichu":["Static",""],"Munchlax":["Pickup","Thick Fat"],
+  "Beldum":["Clear Body",""],"Bronzor":["Levitate","Heatproof"],"Magikarp":["Swift Swim",""],
+  "Horsea":["Swift Swim","Sniper"],"Spinda":["Own Tempo","Tangled Feet"],
+  "Smeargle":["Own Tempo","Technician"],"Tyrogue":["Guts","Steadfast"],
+  "Machop":["Guts","No Guard"],"Mankey":["Vital Spirit","Anger Point"],
+  "Meditite":["Pure Power",""],"Eevee":["Run Away","Adaptability"],
+  "Skitty":["Cute Charm","Normalize"],"Plusle":["Plus",""],"Minun":["Minus",""],
+  "Snubbull":["Intimidate","Run Away"],"Miltank":["Thick Fat","Scrappy"],
+  "Togekiss":["Hustle","Serene Grace"],"Porygon":["Trace","Download"],
+  "Togepi":["Hustle","Serene Grace"],"Clefairy":["Cute Charm","Magic Guard"],
+  "Jigglypuff":["Cute Charm","Competitive"],"Kangaskhan":["Early Bird","Scrappy"],
+  "Doduo":["Run Away","Early Bird"],"Pidgey":["Keen Eye","Tangled Feet"],
+  "Sentret":["Run Away","Keen Eye"],"Wobbuffet":["Shadow Tag",""],
+  "Bellsprout":["Chlorophyll",""],"Venonat":["Compound Eyes","Tinted Lens"],
+  "Paras":["Effect Spore","Dry Skin"],"Oddish":["Chlorophyll",""],
+  "Spearow":["Keen Eye","Sniper"],"Magby":["Flame Body",""],
+  "Onix":["Rock Head","Sturdy"],"Ponyta":["Run Away","Flash Fire"],
+  "Hoothoot":["Insomnia","Keen Eye"],"Geodude":["Rock Head","Sturdy"],
+  "Psyduck":["Damp","Cloud Nine"],"Staryu":["Illuminate","Natural Cure"],
+  "Slowpoke":["Oblivious","Own Tempo"],"Poliwag":["Water Absorb","Damp"],
+  "Sunkern":["Chlorophyll","Solar Power"],"Wooper":["Damp","Water Absorb"],
+  "Elekid":["Static",""],"Magnemite":["Magnet Pull","Sturdy"],
+  "Murkrow":["Insomnia","Super Luck"],"Rattata":["Run Away","Guts"],
+  "Duskull":["Levitate",""],"Misdreavus":["Levitate",""],
+  "Gastly":["Levitate",""],"Zubat":["Inner Focus","Infiltrator"],
+  "Dratini":["Shed Skin","Marvel Scale"],"Gyarados":["Intimidate","Moxie"],
+  "Goldeen":["Swift Swim","Water Veil"],"Tentacool":["Clear Body","Liquid Ooze"],
+  "Lickitung":["Own Tempo","Oblivious"],"Chansey":["Natural Cure","Serene Grace"],
+  "Ekans":["Intimidate","Shed Skin"],"Meowth":["Pickup","Technician"],
+  "Roselia":["Natural Cure","Poison Point"],"Electrike":["Static","Lightning Rod"],
+  "Shroomish":["Effect Spore","Poison Heal"],"Zigzagoon":["Pickup","Gluttony"],
+  "Taillow":["Guts",""],"Wurmple":["Shield Dust","Run Away"],
+  "Corsola":["Hustle","Natural Cure"],"Wingull":["Keen Eye","Hydration"],
+  "Corphish":["Hyper Cutter","Shell Armor"],"Wailmer":["Water Veil","Oblivious"],
+  "Torkoal":["White Smoke","Shell Armor"],"Slugma":["Magma Armor","Flame Body"],
+  "Numel":["Oblivious","Simple"],"Breloom":["Effect Spore","Poison Heal"],
+  "Tropius":["Chlorophyll","Solar Power"],"Seedot":["Chlorophyll","Early Bird"],
+  "Absol":["Pressure","Super Luck"],"Shuppet":["Insomnia","Frisk"],
+  "Sableye":["Keen Eye","Stall"],"Pachirisu":["Run Away","Pickup"],
+  "Buizel":["Swift Swim","Water Veil"],"Bidoof":["Simple","Unaware"],
+  "Starly":["Keen Eye","Reckless"],"Sneasel":["Inner Focus","Keen Eye"],
+  "Smoochum":["Oblivious","Forewarn"],"Swinub":["Oblivious","Snow Cloak"],
+  "Snorunt":["Inner Focus","Ice Body"],"Scyther":["Swarm","Technician"],
+  "Heracross":["Swarm","Guts"],"Caterpie":["Shield Dust","Run Away"],
+  "Weedle":["Shield Dust","Run Away"],"Metapod":["Shed Skin",""],
+  "Kakuna":["Shed Skin",""],"Relicanth":["Swift Swim","Rock Head"],
+  "Lapras":["Water Absorb","Shell Armor"],"Golduck":["Damp","Cloud Nine"],
+  "Slowbro":["Oblivious","Own Tempo"],"Marill":["Thick Fat","Huge Power"],
+  "Lanturn":["Volt Absorb","Illuminate"],"Octillery":["Suction Cups","Sniper"],
+  "Krabby":["Hyper Cutter","Shell Armor"],"Shellder":["Shell Armor","Skill Link"],
+  "Blissey":["Natural Cure","Serene Grace"],"Cleffa":["Cute Charm","Magic Guard"],
+  "Jynx":["Oblivious","Forewarn"],"Dunsparce":["Serene Grace","Run Away"],
+  "Finneon":["Swift Swim","Storm Drain"],"Lumineon":["Swift Swim","Storm Drain"],
+  "Jirachi":["Serene Grace",""],"Starmie":["Illuminate","Natural Cure"],
+};
+
+// Moves especiais por rota e grupo (rotas de evento têm moves únicos)
+const ROUTE_MOVES={
+  "yellow_forest":{
+    "A":["Surf","Fly","Volt Tackle","Teeter Dance"],
+    "B":["Thunderbolt","Thunder","Slam","Growl"],
+    "C":["ThunderShock","Tail Whip","Charm","Sweet Kiss"],
+  },
+  "winners_path":{
+    "A":["Iron Defense","Take Down","Headbutt","Protect"],
+    "B":["Self-Destruct","Lick","Odor Sleuth","Metronome"],
+    "C":["Iron Defense","Take Down","Headbutt","Protect"],
+  },
+  "beyond_sea":{
+    "A":["Dragon Rage","Twister","Smokescreen","Dragon Breath"],
+    "B":["Growl","Bubble","Supersonic","Water Gun"],
+    "C":["Tackle","Growl","Water Sport","Rain Dance"],
+  },
+};
+const DEFAULT_MOVES={"A":["Tackle","Growl","Scratch","Leer"],"B":["Tackle","Growl","Scratch","Tail Whip"],"C":["Tackle","Growl","Leer","Pound"]};
+
+function getAbility(name,pid){ const s=pid&1; const a=ABILITIES[name]||["Unknown",""]; return a[s]||a[0]||"Unknown"; }
+function getMoves(routeId,group){ return (ROUTE_MOVES[routeId]&&ROUTE_MOVES[routeId][group])||DEFAULT_MOVES[group]||DEFAULT_MOVES["C"]; }
+function getIVs(pid){ const h=(pid>>>16)&0xFFFF, l=pid&0xFFFF; return {hp:(h>>0)&31,atk:(h>>5)&31,def:(h>>10)&31,spe:(l>>0)&31,spa:(l>>5)&31,spd:(l>>10)&31}; }
+function isSpecialRoute(routeId){ return !!ROUTE_MOVES[routeId]; }
+
 const C={
   bg:"#e8e8e8",sur:"#d0d0d0",bor:"#888888",
   pixel:"#1a1a1a",dim:"#555555",
@@ -962,12 +1052,13 @@ function Pokewalker(){
       pokemon: npcPkmn,
       giftItem,
       quality,
-      phase: "appear",   // appear → choice → battle/trade/flee → result
-      battleHP: [4,4],   // [player, npc]
+      phase: "appear",
+      battleHP: [4,4],
       log: [],
       steps,
     });
-    setScreen("wanderer");
+    // NÃO redireciona automaticamente — aparece como notificação na Home
+    toast(`👤 ${name} (${title}) quer interagir! Vá ao Menu.`, 4000);
   };
 
   const wandererBattle=(action)=>{
@@ -1029,14 +1120,8 @@ function Pokewalker(){
     if(stroll.capturedPokemon.length>=3){ toast("Inventário cheio! Máx. 3 Pokémon."); return; }
     if(!spendWatts(10)) return;
     // rareBoost: force a fresh pool roll that favors group A
-    let wild;
-    if(stroll.rareBoost){
-      const boostedPool={...stroll.pool};
-      // Override: always use group A pokemon when rare boost is active
-      wild=boostedPool.A;
-    } else {
-      wild=resolveEncounter(stroll.pool,stroll.steps,stroll.typeAdv,lcgRef.current);
-    }
+    const wild=stroll.rareBoost ? {...stroll.pool.A, group:"A"} : {...resolveEncounter(stroll.pool,stroll.steps,stroll.typeAdv,lcgRef.current)};
+    if(!wild.group){ wild.group = wild===stroll.pool.A?"A":wild===stroll.pool.B?"B":"C"; }
     setCombat({wild,playerHP:4,wildHP:4,log:[`Um ${wild.name} selvagem apareceu!`],over:false,result:null});
     setScreen("radar");
   };
@@ -1076,7 +1161,18 @@ function Pokewalker(){
     if(over&&res==="caught"){
       const tid=pw?.trainer?.tid||0, sid=pw?.trainer?.sid||0;
       const {pid,shiny}=generatePID(lcgRef.current,tid,sid);
-      setStroll(s=>({...s,capturedPokemon:[...s.capturedPokemon,{name:combat.wild.name,gender:combat.wild.gender,level:combat.wild.level,pid:"0x"+pid.toString(16).toUpperCase().padStart(8,"0"),shiny}]}));
+      const pidNum = pid>>>0;
+      const nature = NATURES[pidNum%25];
+      const ability = getAbility(combat.wild.name, pidNum);
+      const ivs = getIVs(pidNum);
+      const moves = getMoves(stroll.route.id, combat.wild.group||"C");
+      const isSpecial = isSpecialRoute(stroll.route.id);
+      setStroll(s=>({...s,capturedPokemon:[...s.capturedPokemon,{
+        name:combat.wild.name, gender:combat.wild.gender, level:combat.wild.level,
+        pid:"0x"+pidNum.toString(16).toUpperCase().padStart(8,"0"),
+        shiny, nature, ability, ivs, moves, isSpecial,
+        group: combat.wild.group||"C", route: stroll.route.name,
+      }]}));
     }
   };
 
@@ -1544,8 +1640,20 @@ function MenuScreen({stroll,onRadar,onDowsing,onStats,onBack,onEnd,onAddSteps,on
         <div style={{marginTop:"16px",background:"#1f2937",border:"1px solid #374151",borderRadius:"12px",padding:"14px"}}>
           <div style={{fontSize:"12px",color:"#6b7280",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}}>Inventário do Passeio</div>
           {stroll.capturedPokemon.map((p,i)=>(
-            <div key={i} style={{padding:"8px 0",borderBottom:"1px solid #374151",fontSize:"14px",color:p.shiny?"#f59e0b":"#a78bfa"}}>
-              <PkmnSprite name={p.name} size={24} shiny={p.shiny} style={{verticalAlign:"middle",marginRight:4}}/> {p.name} {p.gender} Lv.{p.level}{p.shiny?" — SHINY! ⭐":""}
+            <div key={i} style={{padding:"10px 0",borderBottom:"1px solid #374151"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                <PkmnSprite name={p.name} size={28} shiny={p.shiny}/>
+                <div>
+                  <span style={{fontSize:"15px",fontWeight:"700",color:p.shiny?"#f59e0b":"#a78bfa"}}>{p.name}</span>
+                  <span style={{fontSize:"13px",color:"#9ca3af",marginLeft:6}}>{p.gender} Lv.{p.level}</span>
+                  {p.shiny&&<span style={{fontSize:"12px",color:"#f59e0b",marginLeft:6}}>✨ SHINY</span>}
+                  {p.isSpecial&&<span style={{fontSize:"11px",color:"#10b981",marginLeft:6,background:"rgba(16,185,129,.15)",padding:"1px 6px",borderRadius:4}}>★ ESPECIAL</span>}
+                </div>
+              </div>
+              {p.nature&&<div style={{fontSize:"12px",color:"#6b7280"}}>Nature: <span style={{color:"#f9fafb",fontWeight:600}}>{p.nature}</span> · Ability: <span style={{color:"#f9fafb",fontWeight:600}}>{p.ability}</span></div>}
+              {p.ivs&&<div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>IVs: HP<b style={{color:"#f9fafb"}}>{p.ivs.hp}</b> Atk<b style={{color:"#f9fafb"}}>{p.ivs.atk}</b> Def<b style={{color:"#f9fafb"}}>{p.ivs.def}</b> Spe<b style={{color:"#f9fafb"}}>{p.ivs.spe}</b> SpA<b style={{color:"#f9fafb"}}>{p.ivs.spa}</b> SpD<b style={{color:"#f9fafb"}}>{p.ivs.spd}</b></div>}
+              {p.moves&&<div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>Moves: <span style={{color:"#60a5fa"}}>{p.moves.join(" · ")}</span></div>}
+              <div style={{fontSize:"11px",color:"#374151",marginTop:2}}>PID: <span style={{color:"#4b5563",fontFamily:"monospace"}}>{p.pid}</span></div>
             </div>
           ))}
           {stroll.foundItems.map((it,i)=>(
@@ -1824,8 +1932,49 @@ function ResultScreen({result,onNew}){
         <div style={{background:"#1f2937",border:"1px solid #374151",borderRadius:"12px",padding:"14px",marginBottom:"14px"}}>
           <div style={{fontSize:"13px",fontWeight:"600",color:"#6b7280",textTransform:"uppercase",letterSpacing:"1px",marginBottom:"10px"}}>Adicionar ao Jogo</div>
           {s.capturedPokemon.map((p,i)=>(
-            <div key={i} style={{padding:"8px 0",borderBottom:"1px solid #374151",fontSize:"14px",color:p.shiny?"#f59e0b":"#a78bfa"}}>
-              <PkmnSprite name={p.name} size={24} shiny={p.shiny} style={{verticalAlign:"middle",marginRight:4}}/> {p.name} {p.gender} Lv.{p.level} — PID: {p.pid}{p.shiny?" SHINY! ⭐":""}
+            <div key={i} style={{padding:"12px 0",borderBottom:"1px solid #374151"}}>
+              {/* Header com sprite e nome */}
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                <PkmnSprite name={p.name} size={48} shiny={p.shiny}/>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                    <span style={{fontSize:"17px",fontWeight:"700",color:p.shiny?"#f59e0b":"#a78bfa"}}>{p.name}</span>
+                    <span style={{fontSize:"14px",color:"#9ca3af"}}>{p.gender} Lv.{p.level}</span>
+                    {p.shiny&&<span style={{fontSize:"13px",color:"#f59e0b",fontWeight:700}}>✨ SHINY!</span>}
+                    {p.isSpecial&&<span style={{fontSize:"12px",color:"#10b981",background:"rgba(16,185,129,.15)",padding:"2px 8px",borderRadius:4,fontWeight:600}}>★ ESPECIAL</span>}
+                  </div>
+                  <div style={{fontSize:"12px",color:"#6b7280",marginTop:2}}>Rota: {p.route} · Grupo {p.group}</div>
+                </div>
+              </div>
+              {/* Dados para o PKHeX */}
+              <div style={{background:"#111827",borderRadius:8,padding:"10px 12px"}}>
+                <div style={{fontSize:"11px",color:"#6b7280",textTransform:"uppercase",letterSpacing:"0.5px",marginBottom:6}}>Dados para o PKHeX</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4,fontSize:"13px",marginBottom:6}}>
+                  <span style={{color:"#6b7280"}}>PID:</span><span style={{color:"#f9fafb",fontFamily:"monospace",fontWeight:600}}>{p.pid}</span>
+                  <span style={{color:"#6b7280"}}>Nature:</span><span style={{color:"#f9fafb",fontWeight:600}}>{p.nature||"—"}</span>
+                  <span style={{color:"#6b7280"}}>Ability:</span><span style={{color:"#f9fafb",fontWeight:600}}>{p.ability||"—"}</span>
+                  <span style={{color:"#6b7280"}}>Level:</span><span style={{color:"#f9fafb",fontWeight:600}}>{p.level}</span>
+                </div>
+                {p.ivs&&<>
+                  <div style={{fontSize:"11px",color:"#6b7280",marginBottom:4}}>IVs:</div>
+                  <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:4,textAlign:"center",marginBottom:8}}>
+                    {[["HP",p.ivs.hp],["Atk",p.ivs.atk],["Def",p.ivs.def],["Spe",p.ivs.spe],["SpA",p.ivs.spa],["SpD",p.ivs.spd]].map(([lbl,val])=>(
+                      <div key={lbl} style={{background:"#1f2937",borderRadius:4,padding:"4px 2px",border:`1px solid ${val>=28?"#10b981":val>=20?"#374151":"#374151"}`}}>
+                        <div style={{fontSize:"9px",color:"#6b7280"}}>{lbl}</div>
+                        <div style={{fontSize:"13px",fontWeight:"700",color:val>=28?"#10b981":val>=20?"#f9fafb":"#9ca3af"}}>{val}</div>
+                      </div>
+                    ))}
+                  </div>
+                </>}
+                {p.moves&&<>
+                  <div style={{fontSize:"11px",color:"#6b7280",marginBottom:4}}>Moves{p.isSpecial?" (exclusivos da rota ★)":""}:</div>
+                  <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                    {p.moves.map((m,mi)=>(
+                      <span key={mi} style={{fontSize:"12px",background:p.isSpecial?"rgba(16,185,129,.2)":"#1f2937",border:`1px solid ${p.isSpecial?"#10b981":"#374151"}`,borderRadius:4,padding:"3px 8px",color:p.isSpecial?"#6ee7b7":"#9ca3af"}}>{m}</span>
+                    ))}
+                  </div>
+                </>}
+              </div>
             </div>
           ))}
           {s.foundItems.map((it,i)=>(
